@@ -1,6 +1,7 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
+#include<math.h>
 #define stack_size 20 
  
 void push(int value, int *top, int s[]) { 
