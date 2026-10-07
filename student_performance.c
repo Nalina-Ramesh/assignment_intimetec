@@ -52,6 +52,14 @@ void display(struct student s) {
     
 }
 
+void print_rollnumber(struct student s[], int n,int index) {
+    if(index == n) {
+        return;
+    }
+    printf("%d ", s[index].roll_no);
+    print_rollnumber(s, n, index + 1);
+}
+
 int main(){
     int n;
     printf("enter the number of students: ");
@@ -74,8 +82,10 @@ int main(){
     }
     for(int i=0; i<n; i++){
         printf("------------------------------\n");
-        display(s[i]);
-        
+        display(s[i]);  
     }
+    printf("\n");
+    printf("list of roll numbers of students: ");
+    print_rollnumber(s, n,0);
 
 }
