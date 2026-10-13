@@ -30,7 +30,7 @@ void book(int num_tickets,int category){
         discount=sub_total*0.1;
     }
     else{
-        discount=0.00;
+        discount=0;
     }
     final_bill=sub_total-discount;
 
@@ -41,18 +41,20 @@ int main(){
     int category;
     printf("Enter the Customer Name:");
     scanf("%s", name);
-    printf("Enter the number of tickets you want to book:(1-20)");
+    printf("Enter the number of tickets you want to book(1-20):");
     scanf("%d", &num_tickets);
-    printf("Enter the category of the ticket\n 1.Standard(Rs.150)\n 2.Premium(Rs.250)\n 3.Recliner(Rs.400)\n");
+    printf("1.Standard(Rs.150/-)\n 2.Premium(Rs.250/-/-)\n 3.Recliner(Rs.400)\n Enter the Ticket Category:");
     scanf("%d", &category);
 
     book(num_tickets,category);
-
+    printf("--------------------------------------------\n");
     printf("Customer Name: %s\n", name);
     printf("Ticket category: %d\n", category);
     printf("Number of tickets booked: %d\n", num_tickets);
     printf("Sub Total: Rs %.2lf\n", sub_total);
     printf("Discount: Rs %.2lf\n", discount);
+    printf("---------------------------------------------\n");
     printf("Final Bill: Rs %.2lf\n", final_bill);
+    printf("----------------------------------------------\n");
     return 0;
 }
