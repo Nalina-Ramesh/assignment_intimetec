@@ -3,6 +3,9 @@
 double sub_total;
 double discount;
 double final_bill;
+double standard_price=150;
+double premium_price=250;
+double recliner_price=400;
 
 void book(int num_tickets,int category){
     if(num_tickets<1 || num_tickets>20){
@@ -11,13 +14,13 @@ void book(int num_tickets,int category){
     }
     switch(category){
         case 1:
-            sub_total=num_tickets*150;
+            sub_total=num_tickets*standard_price;
             break;
         case 2:
-            sub_total=num_tickets*250;
+            sub_total=num_tickets*premium_price;
             break;
         case 3:
-            sub_total=num_tickets*400;
+            sub_total=num_tickets*recliner_price;
             break;
         default:
             printf("Invalid category");
