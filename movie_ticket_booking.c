@@ -43,7 +43,7 @@ int main(){
     scanf("%s", name);
     printf("Enter the number of tickets you want to book(1-20):");
     scanf("%d", &num_tickets);
-    printf("1.Standard(Rs.150/-)\n 2.Premium(Rs.250/-/-)\n 3.Recliner(Rs.400)\n Enter the Ticket Category:");
+    printf("1.Standard(Rs.150/-)\n 2.Premium(Rs.250/-)\n 3.Recliner(Rs.400/-)\n Enter the Ticket Category:");
     scanf("%d", &category);
 
     book(num_tickets,category);
