@@ -5,6 +5,10 @@ double discount;
 double final_bill;
 
 void book(int num_tickets,int category){
+    if(num_tickets<1 || num_tickets>20){
+        printf("Please enter a valid number between 1 to 20\n");
+        exit(0);
+    }
     switch(category){
         case 1:
             sub_total=num_tickets*150;
