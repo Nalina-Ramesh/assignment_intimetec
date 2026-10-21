@@ -48,6 +48,8 @@ void add_employee(struct Employee *employees, int *count)
 void delete_employee(struct Employee *employees, int *count, int employee_id)
 {
     int index = -1;
+    
+
     for (int i = 0; i < *count; i++)
     {
         if (employees[i].employee_id == employee_id)
@@ -64,8 +66,83 @@ void delete_employee(struct Employee *employees, int *count, int employee_id)
 
     if (index == -1)
     {
-        printf("Employee with ID %d not found.\n", employee_id);
+        printf("Employee not found.\n");
         return;
+    }
+
+    int manager_id = employees[index].reporting_manager_id;
+    int recipient = -1;
+    int children = employees[index].num_reports;
+
+    for (int i = 0; i < *count; i++)
+    {
+        if (i != index && manager_id != -1 &&
+            employees[i].reporting_manager_id == manager_id && (recipient == -1 || employees[i].num_reports < employees[recipient].num_reports))
+        {
+            recipient = i;
+        }
+    }
+
+    if (recipient == -1)
+    {
+        for (int i = 0; i < *count; i++)
+        {
+            if (employees[i].employee_id == manager_id)
+            {
+                recipient = i;
+                break;
+            }
+        }
+    }
+
+    if (children > 0 && recipient == -1)
+    {
+        printf("Cannot transfer direct reports.\n");
+        return;
+    }
+
+    if (recipient != -1 &&
+        employees[recipient].num_reports + children > 100)
+    {
+        printf("Not enough space to transfer reports.\n");
+        return;
+    }
+
+    for (int r = 0; r < children; r++)
+    {
+        int child_id = employees[index].reports[r];
+
+        employees[recipient].reports[employees[recipient].num_reports++] =
+            child_id;
+
+        for (int j = 0; j < *count; j++)
+        {
+            if (employees[j].employee_id == child_id)
+            {
+                employees[j].reporting_manager_id =
+                    employees[recipient].employee_id;
+                break;
+            }
+        }
+    }
+
+    for (int i = 0; i < *count; i++)
+    {
+        if (employees[i].employee_id == manager_id)
+        {
+            for (int j = 0; j < employees[i].num_reports; j++)
+            {
+                if (employees[i].reports[j] == employee_id)
+                {
+                    for (int k = j; k < employees[i].num_reports - 1; k++)
+                        employees[i].reports[k] = employees[i].reports[k + 1];
+
+                    employees[i].num_reports--;
+                    break;
+                }
+            }
+            break;
+        }
     }
 
     for (int i = index; i < *count - 1; i++)
@@ -74,8 +151,10 @@ void delete_employee(struct Employee *employees, int *count, int employee_id)
     }
 
     (*count)--;
-    printf("Employee with ID %d deleted successfully!\n", employee_id);
+
+    printf("Employee of ID %d deleted successfully!\n", employee_id);
 }
+
 
 void display_complete_hierarchy(struct Employee *employees, int count, int manager_id, int level)
 {
