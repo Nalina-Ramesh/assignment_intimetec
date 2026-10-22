@@ -12,6 +12,21 @@ struct Employee
     int num_reports;
 };
 
+int count_subordinates(struct Employee *employees, int count, int employee_id)
+{
+    int total = 0;
+    for (int i = 0; i < count; i++)
+    {
+        if (employees[i].reporting_manager_id == employee_id)
+        {
+            total += 1;
+            total += count_subordinates(employees, count, employees[i].employee_id);
+        }
+    }
+    return total;
+}
+
+
 void add_employee(struct Employee *employees, int *count)
 {
     struct Employee new_employee;
@@ -48,14 +63,13 @@ void add_employee(struct Employee *employees, int *count)
 void delete_employee(struct Employee *employees, int *count, int employee_id)
 {
     int index = -1;
-    
 
     for (int i = 0; i < *count; i++)
     {
         if (employees[i].employee_id == employee_id)
         {
             index = i;
-            if(strcmp(employees[i].employee_designation, "ceo") == 0)
+            if (strcmp(employees[i].employee_designation, "ceo") == 0)
             {
                 printf("Cannot delete the CEO.\n");
                 return;
@@ -155,7 +169,6 @@ void delete_employee(struct Employee *employees, int *count, int employee_id)
     printf("Employee of ID %d deleted successfully!\n", employee_id);
 }
 
-
 void display_complete_hierarchy(struct Employee *employees, int count, int manager_id, int level)
 {
     for (int i = 0; i < count; i++)
@@ -178,7 +191,31 @@ void display_employee_hierarchy(struct Employee *employees, int count)
     int employee_id;
     scanf("%d", &employee_id);
 
+    int index = -1;
+
+    for (int i = 0; i < count; i++)
+    {
+        if (employees[i].employee_id == employee_id)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1)
+    {
+        printf("Employee not found.\n");
+        return;
+    }
+
+    printf("%d - %s - %s\n",
+           employees[index].employee_id,
+           employees[index].employee_name,
+           employees[index].employee_designation);
+
     display_complete_hierarchy(employees, count, employee_id, 0);
+    int count_sub = count_subordinates(employees, count, employee_id);
+    printf("Total subordinates for employee %d: %d\n", employee_id, count_sub);
 }
 
 int main()
@@ -194,7 +231,8 @@ int main()
         printf("2. Delete Employee\n");
         printf("3. Display complete Hierarchy\n");
         printf("4. Display Employee Hierarchy\n");
-        printf("5. Exit\n");
+        printf("5. Count Subordinates\n");
+        printf("6. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -218,6 +256,13 @@ int main()
             display_employee_hierarchy(employees, count);
             break;
         case 5:
+            printf("Enter Employee ID to count subordinates: ");
+            int employee_id;
+            scanf("%d", &employee_id);
+            int subordinates = count_subordinates(employees, count, employee_id);
+            printf("Total subordinates for employee %d: %d\n", employee_id, subordinates);
+            break;
+        case 6:
             exit(0);
         default:
             printf("Invalid choice! Please try again.\n");
