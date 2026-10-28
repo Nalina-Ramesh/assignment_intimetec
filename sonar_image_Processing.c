@@ -17,7 +17,7 @@ void rotate_matrix(int **matrix, int n)
 {
     for (int i = 0; i < n; i++)
     {
-        for (int j = i; j < n; j++)
+        for (int j = i + 1; j < n; j++)
         {
             int temp = *(*(matrix + i) + j);
             *(*(matrix + i) + j) = *(*(matrix + j) + i);
@@ -41,13 +41,22 @@ void rotate_matrix(int **matrix, int n)
 
 void smoothing_filter(int **matrix, int n)
 {
-    int **result = malloc(n * sizeof(int *));
+    int *prev = (int *)malloc(n * sizeof(int));
+    int *curr = (int *)malloc(n * sizeof(int));
 
-    for (int i = 0; i < n; i++)
-        *(result + i) = malloc(n * sizeof(int));
+    if (prev == NULL || curr == NULL)
+    {
+        free(prev);
+        free(curr);
+        return;
+    }
 
     for (int i = 0; i < n; i++)
     {
+        for (int j = 0; j < n; j++)
+        {
+            *(curr + j) = *(*(matrix + i) + j);
+        }
         for (int j = 0; j < n; j++)
         {
             int sum = 0;
@@ -58,26 +67,42 @@ void smoothing_filter(int **matrix, int n)
                 {
                     if (x >= 0 && x < n && y >= 0 && y < n && !(x == i && y == j))
                     {
-                        sum += *(*(matrix + x) + y);
+                        int value = 0;
+
+                        if (x == i)
+                        {
+                            value = *(curr + y);
+                        }
+                        else if (x == i - 1)
+                        {
+                            value = *(prev + y);
+                        }
+                        else
+                        {
+                            value = *(*(matrix + x) + y);
+                        }
+
+                        sum += value;
                         count++;
                     }
                 }
             }
 
-            *(*(result + i) + j) = sum / count;
+            if (count > 0)
+            {
+                *(*(matrix + i) + j) = sum / count;
+            }
         }
-    }
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            *(*(matrix + i) + j) = *(*(result + i) + j);
-        }
-        free(*(result + i));
+
+        int *temp = prev;
+        prev = curr;
+        curr = temp;
     }
 
-    free(result);
+    free(prev);
+    free(curr);
 }
+
 void print_matrix(int **matrix, int n)
 {
     for (int i = 0; i < n; i++)
@@ -108,4 +133,10 @@ int main()
     printf("---------------------\n");
     smoothing_filter(matrix, n);
     print_matrix(matrix, n);
+
+    for (int i = 0; i < n; i++)
+    {
+        free(*(matrix + i));
+    }
+    free(matrix);
 }
