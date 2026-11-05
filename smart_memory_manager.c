@@ -23,6 +23,42 @@ void first_fit();
 void best_fit();
 void worst_fit();
 
+int find_fit_index(int fit_choice, int size) {
+    if (fit_choice == 1) { // First Fit
+        for (int i = 0; i < num_blocks; i++) {
+            if (!data_array[i].is_allocated && data_array[i].block_size >= size) {
+                return i;
+            }
+        }
+    } else if (fit_choice == 2) { // Best Fit
+        int best_index = -1;
+        int min_rem_size = buffer_size + 1;
+        for (int i = 0; i < num_blocks; i++) {
+            if (!data_array[i].is_allocated && data_array[i].block_size >= size) {
+                int rem_size = data_array[i].block_size - size;
+                if (rem_size < min_rem_size) {
+                    min_rem_size = rem_size;
+                    best_index = i;
+                }
+            }
+        }
+        return best_index;
+    } else if (fit_choice == 3) { // Worst Fit
+        int worst_index = -1;
+        int max_rem_size = -1;
+        for (int i = 0; i < num_blocks; i++) {
+            if (!data_array[i].is_allocated && data_array[i].block_size >= size) {
+                int rem_size = data_array[i].block_size - size;
+                if (rem_size > max_rem_size) {
+                    max_rem_size = rem_size;
+                    worst_index = i;
+                }
+            }
+        }
+        return worst_index;
+    }
+    return -1;
+}
 void allocation_strategy(int *fit_choice)
 {
     printf("Select allocation strategy(1.First Fit , 2. Best Fit , 3. Worst Fit ):");
