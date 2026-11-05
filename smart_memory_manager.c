@@ -97,15 +97,13 @@ void split_and_allocate(int index, int size)
 {
     if (data_array[index].block_size > size)
     {
-        // Grow metadata array to host the newly split free block fragment
         data_array = (memory *)realloc(data_array, (num_blocks + 1) * sizeof(memory));
 
-        // Shift trailing blocks right
         for (int i = num_blocks; i > index + 1; i--)
         {
             data_array[i] = data_array[i - 1];
         }
-        // Create the remaining free block block
+
         data_array[index + 1].starting_offset = data_array[index].starting_offset + size;
         data_array[index + 1].block_size = data_array[index].block_size - size;
         data_array[index + 1].allocation_id = 0;
@@ -114,7 +112,6 @@ void split_and_allocate(int index, int size)
         num_blocks++;
     }
 
-    // Allocate target block
     data_array[index].block_size = size;
     data_array[index].allocation_id = next_allocation_id++;
     data_array[index].is_allocated = true;
@@ -228,17 +225,15 @@ void coalesce_free_blocks()
     {
         if (!data_array[i].is_allocated && !data_array[i + 1].is_allocated)
         {
-            // Combine current block with next block
             data_array[i].block_size += data_array[i + 1].block_size;
 
-            // Shift subsequent metadata items left
             for (int j = i + 1; j < num_blocks - 1; j++)
             {
                 data_array[j] = data_array[j + 1];
             }
             num_blocks--;
             data_array = (memory *)realloc(data_array, num_blocks * sizeof(memory));
-            i--; // Re-evaluate index position post-merge
+            i--;
         }
     }
 }
@@ -348,7 +343,38 @@ void resize_memory(int *fit_choice)
     // Case 3: In-place expansion failed -> Attempt Relocation
     printf("In-place expansion failed.\n");
 
-    
+    int alt_index = find_fit_index(*fit_choice, new_size);
+    if (alt_index != -1)
+    {
+        int old_offset = data_array[target_index].starting_offset;
+
+        split_and_allocate(alt_index, new_size);
+
+        int new_target_index = -1;
+        for (int i = 0; i < num_blocks; i++)
+        {
+            if (data_array[i].is_allocated && data_array[i].starting_offset != old_offset && data_array[i].block_size == new_size)
+            {
+                new_target_index = i;
+            }
+        }
+
+        for (int i = 0; i < num_blocks; i++)
+        {
+            if (data_array[i].starting_offset == old_offset)
+            {
+                data_array[i].is_allocated = false;
+                data_array[new_target_index].allocation_id = id;
+                data_array[i].allocation_id = 0;
+                break;
+            }
+        }
+
+        next_allocation_id--;
+        coalesce_free_blocks();
+        printf("Block successfully relocated to a new memory offset.\n");
+        return;
+    }
 }
 void display_memory_map()
 {
