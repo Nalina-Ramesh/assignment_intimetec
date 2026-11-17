@@ -424,6 +424,12 @@ void freeDirectory(FileNode *dir)
     }
 }
 
+// Release all memory
+void cleanup()
+{
+    freeDirectory(root);
+    free(root);
+}
 
 int main()
 {
@@ -521,6 +527,10 @@ int main()
         else
             printf("Unknown command.\n");
     }
+
+    cleanup();
+
+    printf("Memory released. Exiting program.\n");
 
     return 0;
 }
