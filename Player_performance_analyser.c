@@ -356,6 +356,41 @@ void addPlayer(void)
 }
 
 
+void displayTeamsByAverage(void)
+{
+    Team sorted[MAX_TEAMS];
+
+    for (int i = 0; i < numberOfTeams; i++)
+        sorted[i] = allTeams[i];
+
+    for (int i = 1; i < numberOfTeams; i++)
+    {
+        Team key = sorted[i];
+        int j = i - 1;
+
+        while (j >= 0 &&
+               sorted[j].avg_batting_strike_rate < key.avg_batting_strike_rate)
+        {
+            sorted[j + 1] = sorted[j];
+            j--;
+        }
+        sorted[j + 1] = key;
+    }
+
+    printf("\nTeams Sorted by Average Batting Strike Rate\n");
+    printf("===============================================================\n");
+    printf("%-6s %-22s %-15s %-12s\n",
+           "ID", "Team Name", "Avg Bat SR", "Total Players");
+    printf("===============================================================\n");
+
+    for (int i = 0; i < numberOfTeams; i++)
+        printf("%-6d %-22s %-15.2f %-12d\n",
+               sorted[i].team_id, sorted[i].name,
+               sorted[i].avg_batting_strike_rate, sorted[i].total_players);
+
+    printf("===============================================================\n");
+}
+
 
 void displayTopK(void)
 {
@@ -453,6 +488,23 @@ void displayAllPlayersOfRole(void)
     printf("============================================================================================================\n");
 }
 
+void freeMemory(void)
+{
+    for (int i = 0; i < totalCount; i++)
+        free(allPlayers[i]);
+
+    for (int i = 0; i < numberOfTeams; i++)
+        for (int r = 0; r < ROLE_COUNT; r++)
+        {
+            Node *current = roleLists[i][r];
+            while (current != NULL)
+            {
+                Node *temp = current;
+                current = current->next;
+                free(temp);
+            }
+        }
+}
 
 int main(void)
 {
