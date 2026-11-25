@@ -25,13 +25,12 @@ int main()
 {
     int n;
     char input[1000];
-    char src[100], dest[100];
     struct Node *tickets[100] = {NULL};
     printf("enter the number of tickets\n");
     scanf("%d", &n);
-
+    getchar();
     printf("enter the source and destination in format(source->destination) of all the tickets to start from\n");
-    for (int i = 0; i <= n; i++)
+    for (int i = 0; i < n; i++)
     {
         if (fgets(input, sizeof(input), stdin) != NULL)
         {
@@ -86,7 +85,7 @@ int main()
     struct Node *curr = start;
     while (curr != NULL)
     {
-        printf("%s -> %s\n", curr->source, curr->destination);
+        printf(" %s -> %s ", curr->source, curr->destination);
         curr = curr->next;
     }
 
@@ -97,4 +96,3 @@ int main()
 
     return 0;
 }
-
